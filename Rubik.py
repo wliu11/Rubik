@@ -1,12 +1,13 @@
 class Rubik(object):
 
     global CUBE_STATE
+    CUBE_STATE = []
 
     def __init__(self):
-        self.input()
+        self.CUBE_STATE = CUBE_STATE
 
     def strHelper(self, start, finish):
-        txt = ""
+        txt = " "
         for i in range(start, finish):
             txt += CUBE_STATE['red'][i] + "|"
         txt += " "
@@ -27,13 +28,13 @@ class Rubik(object):
         CUBE_STATE['white'][3] + "|" + CUBE_STATE['white'][6] + "|\n"
         for i in range(8, 5, -1):
             txt += CUBE_STATE['green'][i] + "|"
-        txt += " " + self.strHelper(0, 3) + "\n"
+        txt += "" + self.strHelper(0, 3) + "\n"
         for i in range(5, 2, -1):
             txt += CUBE_STATE['green'][i] + "|"
-        txt += " " + self.strHelper(3, 6) + "\n"
+        txt += "" + self.strHelper(3, 6) + "\n"
         for i in range(2, -1, -1):
             txt += CUBE_STATE['green'][i] + "|"
-        txt += " " + self.strHelper(6, 9)
+        txt += "" + self.strHelper(6, 9)
         for i in range(0, 3):
             txt += "\n          "
             txt += CUBE_STATE['yellow'][6 + i] + "|" + CUBE_STATE['yellow'][3 + i] + "|" \
@@ -55,6 +56,7 @@ class Rubik(object):
     # cubie is the color specified, and input from left to right, top to
     # bottom) the colors of each cube on the face prompted.
     # The user should specify each color by their first letter.
+    # See documentation for which orientation to input colors for each face.
     # Eg. 'white' denoted as 'w', 'red' as 'r', etc.
     def input(self):
         global CUBE_STATE
@@ -65,6 +67,7 @@ class Rubik(object):
         # blue = input("Blue side: ").split()
         # green = input("Green side: ").split()
         # yellow = input("Yellow side: ").split()
+        # CUBE_STATE['white'] = white
         CUBE_STATE = {
             'white': ['w0', 'w1', 'w2', 'w3', 'w4', 'w5', 'w6', 'w7', 'w8'],
             'red': ['r0', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7', 'r8'],
@@ -93,26 +96,50 @@ class Rubik(object):
                 green[i] = yellow[i]
                 yellow[i] = blue[i]
             blue[0], blue[3], blue[6] = tempA, tempB, tempC
-        elif color == 'orange':
+        elif color is 'orange':
             tempA, tempB, tempC = white[2], white[5], white[8]
             for i in range(2, 9, 3):
                 white[i] = blue[i]
                 blue[i] = yellow[i]
                 yellow[i] = green[i]
             green[2], green[5], green[8] = tempA, tempB, tempC
-        elif color == 'white':
-            tempA, tempB, tempC = green[6], green[7], green[8]
+        elif color is 'white':
+            temp = [green[6], green[7], green[8]]
             green[6], green[7], green[8] = red[2], red[1], red[0]
-            red[0], red[1], red[2] = blue[0], blue[1], blue[2]
-            blue[0], blue[1], blue[2] = orange[0], orange[1], orange[2]
-            orange[0], orange[1], orange[2] = tempA, tempB, tempC
+            for i in range(3):
+                red[i] = blue[i]
+                blue[i] = orange[i]
+                orange[i] = temp[i]
+        elif color is 'green':
+            tempA, tempB, tempC = red[0], red[3], red[6]
+            red[0], red[3], red[6] = white[2], white[1], white[0]
+            white[0], white[1], white[2] = orange[2], orange[5], orange[8]
+            orange[2], orange[5], orange[8] = yellow[6], yellow[7], yellow[8]
+            yellow[6], yellow[7], yellow[8] = tempA, tempB, tempC
+        elif color is 'blue':
+            tempA, tempB, tempC = orange[0], orange[3], orange[6]
+            orange[0], orange[3], orange[6] = white[6], white[7], white[8]
+            white[6], white[7], white[8] = red[2], red[5], red[8]
+            red[2], red[5], red[8] = yellow[0], yellow[1], yellow[2]
+            yellow[0], yellow[1], yellow[2] = tempA, tempB, tempC
+        elif color is 'yellow':
+            tempA, tempB, tempC = blue[6], blue[7], blue[8]
+            blue[6], blue[7], blue[8] = red[6], red[7], red[8]
+            red[6], red[7], red[8] = green[0], green[1], green[2]
+            green[0], green[1], green[2] = orange[8], orange[7], orange[6]
+            orange[6], orange[7], orange[8] = tempA, tempB, tempC
         temp = CUBE_STATE[color]
+        print("temp array / current array is: " + str(temp))
         CUBE_STATE[color] = [temp[6], temp[3], temp[0], temp[7], temp[4], temp[1], temp[8], temp[5], temp[2]]
-        print(str(self))
+        print("rearranged array is: " + str(CUBE_STATE[color]))
+        print(self)
+        return CUBE_STATE
 
 
 if __name__ == "__main__":
     rubik = Rubik()
+    rubik.input()
+    # print(str(rubik))
     rubik.rotate('white')
-
+    print(rubik.CUBE_STATE)
 
